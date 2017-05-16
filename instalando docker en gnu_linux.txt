@@ -1,4 +1,4 @@
-Como instalar Docker CE en GNU/Linux desde Cuba y hacer uso del repo de docker online.
+# Como instalar Docker CE en GNU/Linux desde Cuba y hacer uso del repo de docker online.
 
 
  Esto es un breve tutorial que he hecho a peticion de los Grupos @sysadmincuba & @dockercuba de telegram, este tutorial no va a cubrir la parte de trabajar con docker, solo lo que es instalacion de Docker en varias distribuciones GNU/Linux y evitar las restricciones que tenemos con los repositorios de Docker Online. El principal problema que tenemos como cubanos, no es la instalacion de Docker, sino a la hora de hacer "pull" para bajar containers. En este tutorial estare cubriendo algunas ideas para poder hacer uso de los repositorios oficiales de Docker a los cuales no tenemos acceso y tambien como importar y exportar containers desde Docker sin necesidad de usar los repositorios oficiales. Por ahora solo voy a explicar la instalacion de Docker en las tres distribuciones que considero son las mas usadas en nuestro pais (Ubuntu, Debian & Fedora). 
