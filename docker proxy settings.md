@@ -2,12 +2,12 @@
 
 `$ sudo mkdir -p /etc/systemd/system/docker.service.d`
 
-`$ sudo touch etc/systemd/system/docker.service.d/http-proxy.conf	`
+`$ sudo touch /etc/systemd/system/docker.service.d/http-proxy.conf	`
 
 > esto habilita la variable HTTP_PROXY para HTTPS_PROXY creariamos el archivo https-proxy.conf
-...luego agregamos las siguientes lineas en **etc/systemd/system/docker.service.d/http-proxy.conf**
+...luego agregamos las siguientes lineas en **/etc/systemd/system/docker.service.d/http-proxy.conf**
 
-`$ sudo cat etc/systemd/system/docker.service.d/http-proxy.conf`
+`$ cat /etc/systemd/system/docker.service.d/http-proxy.conf`
 
 ```
 [Service]
