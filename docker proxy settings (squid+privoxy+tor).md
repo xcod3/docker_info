@@ -1,17 +1,17 @@
 # Docker --> squid --> privoxy --> TOR --> https://hub.docker.com/
  
-Como obcion numero uno podemos instalar en nuestro mismo servidor (en el cual estamos corriendo Docker) squid+privoxy+tor y luego configurar docker via proxy.
+## Como opción número uno podemos instalar en nuestro mismo servidor (en el cual estamos corriendo Docker) **squid + privoxy + tor** y luego configurar docker via proxy.
 
- Desde Ubuntu o Debian:
+### 1. Desde Ubuntu o Debian:
 
 	$ sudo apt-get install squid3 privoxy tor -y 
 
- Desde Fedora:
+### 2. Desde Fedora:
 	$ sudo dnf install squid3 privoxy tor -y
 
 ... al concluir el proceso de instalacion pasamos a configurar estos tres amigos que nos acabamos de instalar.
 
-Configuracion de squid:
+### Configuracion de squid:
 	$ cat /etc/squid3/squid.conf
 	acl manager proto cache_object
 	acl localhost src 127.0.0.1/32 ::1
@@ -59,7 +59,7 @@ Configuracion de squid:
 	always_direct allow ftp
 	never_direct allow all
 
-Configuracion de Privoxy:
+### Configuracion de Privoxy:
 	$ sudo cat /etc/privoxy/conf
 	forward-socks4a / 127.0.0.1:9050 .
 	confdir /etc/privoxy
@@ -81,7 +81,7 @@ Configuracion de Privoxy:
 	enable-remote-http-toggle 0
 	buffer-limit 4096
 
-Configuracion de TOR:
+### Configuracion de TOR:
 	$ sudo cat /etc/tor/torrc
 	SocksPort 9050 # what port to open for local application connections
 	SocksBindAddress 127.0.0.1 # accept connections only from localhost
@@ -94,22 +94,28 @@ Configuracion de TOR:
 	#HTTPSProxy 192.168.1.1:3128
 	#HTTPSProxyAuthenticator username:password
 
-Iniciamos los servicios:
+### Iniciamos los servicios:
 	$ sudo systemctl start squid3
 	$ sudo systemctl start privoxy
 	$ sudo systemctl start tor
 
-Luego de esto pasamos a configurar las obciones de proxy de Docker:
+### Luego de esto pasamos a configurar las opciones de proxy de Docker:
 	$ sudo mkdir -p /etc/systemd/system/docker.service.d
 	$ sudo touch etc/systemd/system/docker.service.d/http-proxy.conf	# esto habilita la variable HTTP_PROXY para HTTPS_PROXY creariamos el archivo https-proxy.conf
-	...luego agregamos las siguientes lineas en etc/systemd/system/docker.service.d/http-proxy.conf
+
+*...luego agregamos las siguientes líneas en etc/systemd/system/docker.service.d/http-proxy.conf*
+
 	$ sudo cat etc/systemd/system/docker.service.d/http-proxy.conf
 	[Service]
 	Environment="HTTP_PROXY=http://127.0.0.1:3128/"
-	# Reiniciamos los procesos:
+
+*Reiniciamos los procesos:*
+
 	$ sudo systemctl daemon-reload && sudo systemctl restart docker
-	# Verificamos que la variable HTTP_PROXY esta configurada correctamente:
+
+*Verificamos que la variable HTTP_PROXY está configurada correctamente:*
+
 	$ systemctl show --property=Environment docker
 	Environment=HTTP_PROXY=http://127.0.0.1:3128/
 
-	# Con esto ya tenemos Docker proxyficado a traves de Squid+Privoxy+TOR y estamos listos para hacer un docker pull sin problemas.
+*Con esto ya tenemos Docker proxyficado a traves de Squid+Privoxy+TOR y estamos listos para hacer un docker pull sin problemas.*
