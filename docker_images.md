@@ -87,10 +87,6 @@ composer
 
 clearlinux
 
-linuxkonsult/kali-metasploit
-
-kalilinux/kali-linux-docker
-
 centos
 
 fedora
