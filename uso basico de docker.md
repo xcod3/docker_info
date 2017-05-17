@@ -1,5 +1,5 @@
 **Uso basico de Docker**
-Crear, Renombrar, iniciar:
+```Crear, Renombrar, iniciar:
 docker create:		crear un container sin iniciarlo
 docker rename:		renombrar un container
 docker run:		crea e inicia un container
@@ -23,5 +23,6 @@ docker rmi:		eliminar una imagen
 docker save:		savar una imagen a un archivo.tar.gz
 docker pull:		hacer un pull de una imagen desde el repo de docker
 docker push:		hacer un push de una imagen
+```
 
 ...estos son algunos de los comandos basicos de docker, les recomiendo siempre hagan uso de nuestro mejor amigo "--help"...
