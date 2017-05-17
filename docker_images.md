@@ -19,7 +19,6 @@ armhf/drupal
 armhf/postgres
 
 
-
 # HypriotOS Docker Images:
 
 hypriot/rpi-busybox-httpd
