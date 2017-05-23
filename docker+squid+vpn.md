@@ -116,10 +116,84 @@ El contenido de `squid-custom.url` lo crearemos adicionandole estas lineas al fi
 # Sobreescribimos el fichero poniendole la linea siguiente
 echo tcp_outgoing_address $ifconfig_local blocked_sites >       /opt/vpn/squid-custom.conf
 # Adicionamos al fichero la linea
-echo tcp_outgoing_address <<ip local del host>>                  >>      /opt/vpn/squid-custom.conf
+echo tcp_outgoing_address ip_del_host                  >>      /opt/vpn/squid-custom.conf
 
 #reiniciamos el squid para que coja las configuraciones
 service squid reload
 
+```
+
+Lo unico que faltaria seria configurar el docker para que utilice el squid local. 
+
+
+El resultado final seria algo como lo siguiente:
+
+#### Configuracion de las tablas de enrutamiento
+```bash
+$ cat /etc/iproute2/rt_tables
+#
+# reserved values
+#
+255     local
+254     main
+253     default
+0       unspec
+#
+# local
+#
+#1      inr.ruhep
+1000    book
+
+```
+
+#### Contenido (solo con las parte relevantes) del fichero de openvpn
+```bash
+$ cat /opt/vpn/docker.ovpn
+....
+....
+# redirect-gateway
+route-nopull
+
+script-security 2
+route-up /opt/vpn/docker-up.sh
+```
+
+#### Contenido del script `docker-up.sh`
+```bash
+$ cat /opt/vpn/docker-up.sh
+#!/bin/bash
+
+# Eliminamos la regla preexistente, si existe
+while `ip rule del table vpn`; do
+  echo deleting ip rule
+  sleep 1
+done
+
+# Aqui hacemos uso de dos variables predefinidas por openvpn:
+# - $ifconfig_local => ip asignado al host por el servidor de la vpn
+# - $ifconfig_remote => ip remoto del servidor de la vpn
+
+# Adicionamos la regla que dice que cuando una conexion se haga desde el ip de la vpn 
+# busque en la tabla llamada 'vpn'
+ip rule add from $ifconfig_local table vpn
+# Modificamos la tabla de enrutamiento 'vpn' para que su gateway sea el ip remoto de la vpn, 
+# de esta forma todos los pedidos que se enruten por esa tabla pasaran por la vpn
+ip route add default via $ifconfig_remote table vpn
+
+# Sobreescribimos el fichero poniendole la linea siguiente
+echo tcp_outgoing_address $ifconfig_local blocked_sites >       /opt/vpn/squid-custom.conf
+# Adicionamos al fichero la linea
+echo tcp_outgoing_address ip_del_host                  >>      /opt/vpn/squid-custom.conf
+
+service squid reload
+```
+
+#### Contenido del fichero `squid-urls.conf` con las definiciones de las acls:
+```bash
+$ cat /opt/vpn/squid-urls.conf
+acl blocked_sites dstdomain hub.docker.com
+acl blocked_sites dstdomain registry-1.docker.io
+acl blocked_sites dstdomain auth.docker.io
+acl blocked_sites dstdomain index.docker.io
 ```
 
