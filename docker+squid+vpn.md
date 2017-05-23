@@ -123,7 +123,7 @@ service squid reload
 
 ```
 
-Lo unico que faltaria seria configurar el docker para que utilice el squid local. 
+Lo unico que faltaria seria configurar el docker para que utilice el squid local 
 
 
 El resultado final seria algo como lo siguiente:
