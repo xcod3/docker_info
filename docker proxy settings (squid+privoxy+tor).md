@@ -101,7 +101,7 @@
 
 ### Luego de esto pasamos a configurar las opciones de proxy de Docker:
 	$ sudo mkdir -p /etc/systemd/system/docker.service.d
-	$ sudo touch etc/systemd/system/docker.service.d/http-proxy.conf	# esto habilita la variable HTTP_PROXY para HTTPS_PROXY creariamos el archivo https-proxy.conf
+	$ sudo touch /etc/systemd/system/docker.service.d/http-proxy.conf	# esto habilita la variable HTTP_PROXY para HTTPS_PROXY creariamos el archivo https-proxy.conf
 
 *...luego agregamos las siguientes líneas en etc/systemd/system/docker.service.d/http-proxy.conf*
 
