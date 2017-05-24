@@ -1,7 +1,10 @@
-En esta guia de configuración el grueso del tráfico de docker (layers) no pasa por la vpn, solamente lo que es abssolutamente necesario para saltarnos el bloqueo.
+
+# Guía de configuración de VPN para acceder a hub.docker.com
+
+Acá encontrará instrucciones acerca de cómo configurar SQUID para permitir el acceso a [Docker Hub](https://hub.docker.com) desde lugares en que ese dominio esté bloqueado o sea de difícil acceso. En esta guia de configuración el grueso del tráfico de docker (layers) no pasa por la VPN que se configura, sino solamente lo que es abssolutamente necesario para saltarnos el bloqueo.
 
 
-# Descripcion General
+## Descripcion General
 
 Lista de urls relacionadas con docker a las que no se puede acceder desde Cuba:
 * hub.docker.com
@@ -30,15 +33,15 @@ Se crea una regla que diga que los pedidos que se hagan por la ip asignada por l
 
 Finalmente se le dice al squid que a traves de una acl, haga los pedidos a las urls bloqueadas a traves del ip asignado por la vpn
 
-# Prerequisitos
+## Prerequisitos
 
 * squid
 * vpn
 * iproute2
 
-# Pasos
+## Pasos
 
-## Creacion de las tablas de lookup para enrutamiento
+### Creacion de las tablas de lookup para enrutamiento
 
 Las tablas de enrutamiento por defecto estan identificadas con un numero, pero para facilitar las confuraciones se le puede asignar un alias.
 En este caso, vamos a utilizar la tabla 1000, y le vamos a crear un alias, llamandola "vpn"
@@ -50,7 +53,7 @@ Adicionamos al fichero `/etc/iproute2/rt_tables` la siguiente linea:
 `
 
 
-## Configuracion del openvpn para que no se ponga como gateway por defecto
+### Configuracion del openvpn para que no se ponga como gateway por defecto
 
 Casi todas las configuraciones de vpn, una ves que se establece la conexion, hacen que todo el trafico pase por ellas, esto lo puede hacer a traves de dos partes de la configuracion de la vpn, una es a traves del setting `redirect-gateway` y la otra forma es a traves de las rutas que el servidor de openvpn manda para el cliente. 
 
@@ -58,7 +61,7 @@ Casi todas las configuraciones de vpn, una ves que se establece la conexion, hac
 
 2- Evitamos que el servidor nos mande las rutas, adicionando al fichero de configuracion el setting `route-nopull`
 
-## Creacion de la regla para que los pedidos que se hagan por la ip de la vpn hagan lookup en la tabla alernativa
+### Creacion de la regla para que los pedidos que se hagan por la ip de la vpn hagan lookup en la tabla alernativa
 
 Este paso en realidad hay que hacerlo cada vez que se conecte la vpn pues la ip que se le asigna al host y la del servidor de la vpn pueden variar entre conexion y conexion.
 
@@ -91,7 +94,7 @@ ip route add default via $ifconfig_remote table vpn
 
 ```
 
-## Configuracion del squid para que los pedidos que haga a las urls bloquedas las haga por la ip de la vpn
+### Configuracion del squid para que los pedidos que haga a las urls bloquedas las haga por la ip de la vpn
 
 Creamos dos ficheros de configuracion que se incluiran en la configuracion de squid, esto es para facilitar la reconfiguracion de esta parte sin afectar todo lo demas que tengamos en el squid:
 
@@ -128,7 +131,7 @@ Lo unico que faltaria seria configurar el docker para que utilice el squid local
 
 El resultado final seria algo como lo siguiente:
 
-#### Configuracion de las tablas de enrutamiento
+##### Configuracion de las tablas de enrutamiento
 ```bash
 $ cat /etc/iproute2/rt_tables
 #
@@ -146,7 +149,7 @@ $ cat /etc/iproute2/rt_tables
 
 ```
 
-#### Contenido (solo con las parte relevantes) del fichero de openvpn
+##### Contenido (solo con las parte relevantes) del fichero de openvpn
 ```bash
 $ cat /opt/vpn/docker.ovpn
 ....
@@ -158,7 +161,7 @@ script-security 2
 route-up /opt/vpn/docker-up.sh
 ```
 
-#### Contenido del script `docker-up.sh`
+##### Contenido del script `docker-up.sh`
 ```bash
 $ cat /opt/vpn/docker-up.sh
 #!/bin/bash
@@ -188,7 +191,7 @@ echo tcp_outgoing_address ip_del_host                  >>      /opt/vpn/squid-cu
 service squid reload
 ```
 
-#### Contenido del fichero `squid-urls.conf` con las definiciones de las acls:
+##### Contenido del fichero `squid-urls.conf` con las definiciones de las acls:
 ```bash
 $ cat /opt/vpn/squid-urls.conf
 acl blocked_sites dstdomain hub.docker.com
