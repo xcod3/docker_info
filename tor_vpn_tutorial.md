@@ -90,11 +90,11 @@ Creando el archivo de configuración
     pi@raspberrypi:~$ sudo update-rc.d tor enable
 
 #### Al reiniciar el sistema ya debemos tener nuestro TOR_VPN online
-pi@raspberrypi:~$ sudo shutdown -r now
+    pi@raspberrypi:~$ sudo shutdown -r now
 
 
 #### Notas
-En ocaciones he presentado problemas con iptables, para ello me he creado este script el cual ejecuto de forma manual via ssh.
+En ocaciones he presentado problemas con iptables, para ello me he creado este script el cual ejecuto de forma manual via ssh
 
     #!/bin/bash
     sudo iptables -F
@@ -105,3 +105,6 @@ En ocaciones he presentado problemas con iptables, para ello me he creado este s
 
 
 
+Toda peticion que se haga por el puerto 22 va a ser redireccionada a la Raspberry PI o nuestro servidor VPN, o sea que si tratan de hacer un ssh user@mivps.com en realidad van a estar haciendole un ssh al servidor VPN que acaban de configurar.
+
+De mas esta decir que deben tomar las medidas necesarias para proteger su servidor, el cual va a estar conectado directamente a TOR, para ello deben crear sus propias reglas de iptables y denegar uno que otro servicio en la WAN (eth0).
